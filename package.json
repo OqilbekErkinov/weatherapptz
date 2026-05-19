@@ -1,0 +1,22 @@
+{
+  "name": "weather-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^3.13.0",
+    "vue": "^3.5.0",
+    "vuex": "^4.1.0",
+    "axios": "^1.7.7"
+  },
+  "devDependencies": {
+    "sass": "^1.79.0",
+    "sass-loader": "^16.0.0"
+  }
+}

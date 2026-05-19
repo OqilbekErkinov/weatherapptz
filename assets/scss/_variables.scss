@@ -1,0 +1,32 @@
+// SCSS Variables — Light & Dark theme tokens
+
+// ── Fonts ─────────────────────────────────────────────────
+$font-primary: 'Inter', sans-serif;
+
+// ── Light theme ───────────────────────────────────────────
+$light-bg:           #f0f4ff;
+$light-card-bg:      #ffffff;
+$light-card-border:  rgba(255, 255, 255, 0.8);
+$light-text-primary: #1a1f36;
+$light-text-secondary: #6b7a99;
+$light-accent:       #4a90d9;
+$light-accent-hover: #2d72c4;
+$light-shadow:       0 8px 32px rgba(74, 144, 217, 0.12);
+$light-detail-bg:    #f8faff;
+
+// ── Dark theme ────────────────────────────────────────────
+$dark-bg:            #0d1117;
+$dark-card-bg:       #161b27;
+$dark-card-border:   rgba(255, 255, 255, 0.06);
+$dark-text-primary:  #e8ecf4;
+$dark-text-secondary:#8892a4;
+$dark-accent:        #4a90d9;
+$dark-accent-hover:  #5ca0e8;
+$dark-shadow:        0 8px 32px rgba(0, 0, 0, 0.4);
+$dark-detail-bg:     #1e2535;
+
+// ── Shared ─────────────────────────────────────────────────
+$radius-sm:  8px;
+$radius-md:  16px;
+$radius-lg:  24px;
+$transition: 0.3s ease;
