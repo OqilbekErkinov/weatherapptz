@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 
 const OWM_KEY = '4782343fb2a4465732d18b68d60ec6d2'
 const BASE_URL = 'https://api.openweathermap.org/data/2.5'
+const GEO_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 
 function windDir(deg) {
   const dirs = ["северный","северо-восточный","восточный","юго-восточный","южный","юго-западный","западный","северо-западный"]
@@ -78,16 +79,26 @@ export default createStore({
       commit('SET_ERROR', null)
 
       try {
-        // 1. Fetch current weather
-        const curRes = await fetch(`${BASE_URL}/weather?q=${encodeURIComponent(cityName)}&appid=${OWM_KEY}&units=metric&lang=ru`)
+        // 1. Geocode location using Open-Meteo (much smarter at resolving countries/cities)
+        const geoRes  = await fetch(`${GEO_URL}?name=${encodeURIComponent(cityName)}&count=1&language=ru&format=json`)
+        const geoData = await geoRes.json()
+
+        if (!geoData.results?.length) {
+          throw new Error(`Город "${cityName}" не найден`)
+        }
+
+        const { latitude: lat, longitude: lon, name, country } = geoData.results[0]
+        // Display the properly resolved name (e.g. if they type "Egypt", it will resolve correctly)
+        const resolvedName = country && name !== country ? `${name}, ${country}` : name
+        commit('SET_CITY', resolvedName)
+
+        // 2. Fetch current weather from OpenWeatherMap using coordinates
+        const curRes = await fetch(`${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=ru`)
         const curData = await curRes.json()
 
         if (curData.cod !== 200) {
-          throw new Error(curData.message || `Город "${cityName}" не найден`)
+          throw new Error(curData.message || "Ошибка сервера")
         }
-
-        const name = curData.name
-        commit('SET_CITY', name)
 
         // Calculate pressure in mmHg (hPa * 0.75006)
         const pressureMm = Math.round(curData.main.pressure * 0.75006)
@@ -116,8 +127,8 @@ export default createStore({
           windSpeedText: getWindText(curData.wind.speed)
         })
 
-        // 2. Fetch 5-day / 3-hour forecast
-        const fRes = await fetch(`${BASE_URL}/forecast?q=${encodeURIComponent(cityName)}&appid=${OWM_KEY}&units=metric&lang=ru`)
+        // 3. Fetch 5-day / 3-hour forecast using coordinates
+        const fRes = await fetch(`${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=ru`)
         const fData = await fRes.json()
 
         if (String(fData.cod) !== "200") {
