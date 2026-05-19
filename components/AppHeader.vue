@@ -25,7 +25,6 @@
     </div>
 
     <div class="header__controls">
-      <!-- Theme toggle -->
       <button id="theme-toggle-btn" class="theme-toggle" :class="{ dark: isDark }" @click="$emit('toggleTheme')" :title="isDark ? 'Светлая тема' : 'Темная тема'">
         <span class="toggle-track" style="background: none; width: auto; height: auto; box-shadow: none;">
           <span class="toggle-thumb" style="background: none; box-shadow: none; transform: none;">
@@ -37,7 +36,6 @@
         </span>
       </button>
 
-      <!-- City search -->
       <form class="city-search" @submit.prevent="onSearch">
         <input type="text" v-model="searchQuery" placeholder="Выбрать город" />
       </form>

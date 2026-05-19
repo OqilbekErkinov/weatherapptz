@@ -79,7 +79,6 @@ export default createStore({
       commit('SET_ERROR', null)
 
       try {
-        // 1. Geocode location using Open-Meteo (much smarter at resolving countries/cities)
         const geoRes  = await fetch(`${GEO_URL}?name=${encodeURIComponent(cityName)}&count=1&language=ru&format=json`)
         const geoData = await geoRes.json()
 
@@ -88,11 +87,9 @@ export default createStore({
         }
 
         const { latitude: lat, longitude: lon, name, country } = geoData.results[0]
-        // Display the properly resolved name (e.g. if they type "Egypt", it will resolve correctly)
         const resolvedName = country && name !== country ? `${name}, ${country}` : name
         commit('SET_CITY', resolvedName)
 
-        // 2. Fetch current weather from OpenWeatherMap using coordinates
         const curRes = await fetch(`${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=ru`)
         const curData = await curRes.json()
 
@@ -100,7 +97,6 @@ export default createStore({
           throw new Error(curData.message || "Ошибка сервера")
         }
 
-        // Calculate pressure in mmHg (hPa * 0.75006)
         const pressureMm = Math.round(curData.main.pressure * 0.75006)
         const pressureText = pressureMm > 765 ? 'повышенное' : (pressureMm < 755 ? 'пониженное' : 'нормальное')
         
@@ -127,7 +123,6 @@ export default createStore({
           windSpeedText: getWindText(curData.wind.speed)
         })
 
-        // 3. Fetch 5-day / 3-hour forecast using coordinates
         const fRes = await fetch(`${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=ru`)
         const fData = await fRes.json()
 
@@ -151,7 +146,6 @@ export default createStore({
             dailyMap[date].tempMax = Math.max(dailyMap[date].tempMax, item.main.temp_max)
             dailyMap[date].tempMin = Math.min(dailyMap[date].tempMin, item.main.temp_min)
             
-            // Prefer midday (12:00) forecast for general day icon
             if (item.dt_txt.includes('12:00:00')) {
               dailyMap[date].icon = item.weather[0].icon
               dailyMap[date].description = item.weather[0].description
